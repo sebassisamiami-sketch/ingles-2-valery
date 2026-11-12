@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>La Aventura de Inglés de Valery 🌟</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --morado:#7b2ff7;
+    --morado2:#9d50ff;
+    --rosa:#ff4fa3;
+    --amarillo:#ffd43b;
+    --verde:#2ecc71;
+    --rojo:#ff6b6b;
+    --azul:#4dabf7;
+    --cielo:#a6e3ff;
+    --crema:#fff7e6;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; }
+  body{
+    font-family:'Fredoka',sans-serif;
+    background:linear-gradient(160deg,#8e2de2 0%,#ff6cab 55%,#ffd86f 100%);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:14px;
+    overflow-x:hidden;
+    color:#3a2a5e;
+  }
+  /* Estrellas de fondo */
+  .cielo{ position:fixed; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+  .cielo span{
+    position:absolute; color:#fff; opacity:.7; animation:flotar linear infinite;
+    font-size:18px;
+  }
+  @keyframes flotar{
+    0%{ transform:translateY(110vh) rotate(0deg); opacity:0; }
+    10%{ opacity:.8; }
+    90%{ opacity:.8; }
+    100%{ transform:translateY(-10vh) rotate(360deg); opacity:0; }
+  }
+
+  .tarjeta{
+    position:relative; z-index:2;
+    width:100%; max-width:520px;
+    background:var(--crema);
+    border-radius:34px;
+    padding:26px 22px 30px;
+    box-shadow:0 18px 50px rgba(60,10,90,.35), inset 0 0 0 6px #fff;
+    text-align:center;
+  }
+
+  /* ---------- Pantalla de inicio ---------- */
+  .mascota-grande{ font-size:92px; line-height:1; display:inline-block; animation:saltar 1.6s ease-in-out infinite; }
+  @keyframes saltar{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-14px) } }
+
+  h1{
+    font-family:'Baloo 2',sans-serif;
+    font-size:30px; line-height:1.15; margin:8px 0 4px;
+    color:var(--morado);
+    text-shadow:2px 2px 0 #fff;
+  }
+  .sub{ font-size:17px; color:#6b5b8a; margin-bottom:18px; font-weight:500; }
+
+  .caja-nombre{
+    background:#fff; border:3px dashed var(--rosa);
+    border-radius:20px; padding:14px; margin:14px 0 18px;
+  }
+  .caja-nombre p{ font-size:15px; color:#8a7aa8; margin-bottom:8px; }
+  input[type=text]{
+    width:100%; border:none; outline:none; text-align:center;
+    font-family:'Baloo 2',sans-serif; font-size:24px; color:var(--morado);
+    background:#fff6fb; border-radius:14px; padding:10px;
+  }
+
+  .btn{
+    font-family:'Baloo 2',sans-serif; font-weight:700;
+    border:none; cursor:pointer; color:#fff;
+    font-size:21px; padding:15px 26px; border-radius:50px;
+    background:linear-gradient(180deg,var(--verde),#27ae60);
+    box-shadow:0 7px 0 #1e8a4e, 0 10px 18px rgba(0,0,0,.18);
+    transition:transform .08s, box-shadow .08s;
+    width:100%;
+  }
+  .btn:active{ transform:translateY(5px); box-shadow:0 2px 0 #1e8a4e, 0 4px 10px rgba(0,0,0,.18); }
+  .btn.morado{ background:linear-gradient(180deg,var(--morado2),var(--morado)); box-shadow:0 7px 0 #5a1fc0, 0 10px 18px rgba(0,0,0,.18); }
+  .btn.morado:active{ box-shadow:0 2px 0 #5a1fc0; }
+  .btn.rosa{ background:linear-gradient(180deg,#ff6fb3,var(--rosa)); box-shadow:0 7px 0 #c72e78, 0 10px 18px rgba(0,0,0,.18); }
+  .btn.rosa:active{ box-shadow:0 2px 0 #c72e78; }
+
+  .temas{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:16px 0 4px; }
+  .chip{ background:#fff; border-radius:30px; padding:7px 13px; font-size:13px; font-weight:600; color:#7b5ba8; box-shadow:0 3px 8px rgba(120,40,160,.14); }
+
+  /* ---------- Barra superior del juego ---------- */
+  .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .nivel-tag{ background:var(--morado); color:#fff; font-weight:700; font-family:'Baloo 2'; font-size:14px; padding:5px 14px; border-radius:30px; }
+  .estrellas{ font-size:19px; font-weight:700; color:#c98a00; font-family:'Baloo 2'; background:#fff; padding:5px 13px; border-radius:30px; box-shadow:0 3px 8px rgba(200,160,0,.2); }
+
+  .progreso{ background:#eadcff; height:16px; border-radius:30px; overflow:hidden; margin:10px 0 4px; box-shadow:inset 0 2px 4px rgba(0,0,0,.08); }
+  .progreso i{ display:block; height:100%; width:0%; border-radius:30px; background:linear-gradient(90deg,var(--amarillo),var(--rosa)); transition:width .5s ease; }
+  .conteo{ font-size:13px; color:#8a7aa8; margin-bottom:12px; font-weight:500; }
+
+  /* ---------- Pregunta ---------- */
+  .mascota-chica{ font-size:56px; line-height:1; display:inline-block; }
+  .burbuja{
+    position:relative; background:#fff; border-radius:20px; padding:16px 16px;
+    margin:10px 2px 16px; font-size:20px; font-weight:600; color:#4a3a6e;
+    box-shadow:0 6px 16px rgba(120,40,160,.14); line-height:1.3;
+  }
+  .burbuja:after{ content:''; position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+    border-left:12px solid transparent; border-right:12px solid transparent; border-bottom:14px solid #fff; }
+  .en{ display:block; font-family:'Baloo 2'; font-size:23px; color:var(--morado); margin-top:6px; }
+
+  .opciones{ display:grid; gap:11px; }
+  .opcion{
+    font-family:'Fredoka'; font-weight:600; font-size:18px;
+    background:#fff; border:3px solid #ead9ff; color:#5a4a7e;
+    border-radius:18px; padding:14px 14px; cursor:pointer; text-align:center;
+    transition:transform .08s, border-color .1s, background .1s;
+    box-shadow:0 4px 0 #e0cdfa;
+  }
+  .opcion:active{ transform:translateY(3px); box-shadow:0 1px 0 #e0cdfa; }
+  .opcion.bien{ background:#d7ffe6; border-color:var(--verde); color:#1e7a44; box-shadow:0 4px 0 #9fe6ba; animation:late .4s; }
+  .opcion.mal{ background:#ffe0e0; border-color:var(--rojo); color:#c0392b; box-shadow:0 4px 0 #f6b6b6; animation:tiembla .4s; }
+  .opcion.bloqueada{ pointer-events:none; opacity:.9; }
+  @keyframes late{ 0%,100%{ transform:scale(1) } 40%{ transform:scale(1.06) } }
+  @keyframes tiembla{ 0%,100%{ transform:translateX(0) } 25%{ transform:translateX(-7px) } 75%{ transform:translateX(7px) } }
+
+  .reaccion{ min-height:30px; margin-top:14px; font-family:'Baloo 2'; font-weight:700; font-size:22px; }
+  .reaccion.ok{ color:var(--verde); }
+  .reaccion.no{ color:var(--rosa); }
+
+  /* ---------- Premio / fin de nivel ---------- */
+  .premio{ animation:aparece .5s ease; }
+  @keyframes aparece{ from{ transform:scale(.6); opacity:0 } to{ transform:scale(1); opacity:1 } }
+  .medalla{ font-size:100px; display:inline-block; animation:girar 2.2s ease-in-out infinite; }
+  @keyframes girar{ 0%,100%{ transform:rotate(-8deg) } 50%{ transform:rotate(8deg) } }
+  .trofeo{ font-size:120px; display:inline-block; animation:saltar 1.5s ease-in-out infinite; }
+
+  .oculto{ display:none !important; }
+
+  /* Confeti */
+  #confeti{ position:fixed; inset:0; width:100%; height:100%; z-index:5; pointer-events:none; }
+
+  /* boton sonido */
+  .sonido{ position:absolute; top:16px; right:16px; background:#fff; border:none; width:42px; height:42px; border-radius:50%; font-size:20px; cursor:pointer; box-shadow:0 3px 8px rgba(0,0,0,.15); z-index:6; }
+
+  @media (max-width:380px){
+    h1{ font-size:26px; } .burbuja{ font-size:18px; } .opcion{ font-size:17px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cielo" id="cielo"></div>
+<canvas id="confeti"></canvas>
+
+<div class="tarjeta">
+  <button class="sonido" id="btnSonido" title="Sonido">🔊</button>
+
+  <!-- ===== INICIO ===== -->
+  <section id="inicio">
+    <div class="mascota-grande">🐱</div>
+    <h1>La Aventura de<br>Inglés 🌟</h1>
+    <p class="sub">¡Aprende jugando y gana muchas estrellas!</p>
+
+    <div class="caja-nombre">
+      <p>Escribe tu nombre para empezar:</p>
+      <input type="text" id="nombre" placeholder="Valery" maxlength="14" value="Valery" autocomplete="off">
+    </div>
+
+    <button class="btn" id="btnEmpezar">¡Jugar! ▶</button>
+
+    <div class="temas">
+      <span class="chip">🚀 WILL (futuro)</span>
+      <span class="chip">🏃 -ING (ahora)</span>
+      <span class="chip">💡 SHOULD (consejos)</span>
+    </div>
+  </section>
+
+  <!-- ===== JUEGO ===== -->
+  <section id="juego" class="oculto">
+    <div class="topbar">
+      <span class="nivel-tag" id="nivelTag">Nivel 1</span>
+      <span class="estrellas" id="estrellas">⭐ 0</span>
+    </div>
+    <div class="progreso"><i id="barra"></i></div>
+    <div class="conteo" id="conteo">Pregunta 1 de 6</div>
+
+    <div class="mascota-chica" id="mascotaJuego">🐱</div>
+    <div class="burbuja" id="pregunta">Pregunta aquí</div>
+    <div class="opciones" id="opciones"></div>
+    <div class="reaccion" id="reaccion"></div>
+  </section>
+
+  <!-- ===== PREMIO DE NIVEL ===== -->
+  <section id="premioNivel" class="oculto premio">
+    <div class="medalla" id="medallaIcono">🏅</div>
+    <h1 id="premioTitulo">¡Nivel completado!</h1>
+    <p class="sub" id="premioTexto">Ganaste una medalla nueva 🎉</p>
+    <button class="btn morado" id="btnSiguiente">Siguiente nivel ▶</button>
+  </section>
+
+  <!-- ===== FINAL ===== -->
+  <section id="final" class="oculto premio">
+    <div class="trofeo">🏆</div>
+    <h1 id="finalTitulo">¡Lo lograste!</h1>
+    <p class="sub" id="finalTexto">Eres una campeona del inglés 🌟</p>
+    <div class="estrellas" id="finalEstrellas" style="display:inline-block; font-size:24px; margin-bottom:16px;">⭐ 0</div>
+    <br>
+    <button class="btn rosa" id="btnOtraVez">Jugar otra vez 🔁</button>
+  </section>
+</div>
+
+<script>
+/* =========================================================
+   LA AVENTURA DE INGLÉS DE VALERY
+   Juego de repaso: WILL / Presente continuo (-ing) / SHOULD
+   ========================================================= */
+
+/* ---------- Preguntas (basadas en los apuntes) ---------- */
+const NIVELES = [
+  {
+    nombre:"Nivel 1 · WILL 🚀",
+    medalla:"🥇",
+    color:"#4dabf7",
+    titulo:"WILL = el futuro",
+    preguntas:[
+      {
+        q:"¿Qué significa <b>will</b> en español?",
+        en:"I will play",
+        ops:["Ayer / pasado","Voy a... / haré (futuro)","Estoy haciendo"],
+        correcta:1
+      },
+      {
+        q:"¿Para qué usamos <b>will</b>?",
+        en:"",
+        ops:["Para hablar del futuro","Para hablar del pasado","Para describir un animal"],
+        correcta:0
+      },
+      {
+        q:"Completa la oración:",
+        en:"I ____ play soccer tomorrow.",
+        ops:["was","will","am"],
+        correcta:1
+      },
+      {
+        q:"Completa la oración:",
+        en:"She ____ visit her grandma.",
+        ops:["will","did","are"],
+        correcta:0
+      },
+      {
+        q:"La estructura correcta del futuro es:",
+        en:"",
+        ops:["Sujeto + will + verbo","Sujeto + verbo + ed","will + will + verbo"],
+        correcta:0
+      },
+      {
+        q:"¿Cuál oración habla del futuro?",
+        en:"",
+        ops:["I played yesterday","They will travel tomorrow","I am eating now"],
+        correcta:1
+      }
+    ]
+  },
+  {
+    nombre:"Nivel 2 · -ING 🏃",
+    medalla:"🏅",
+    color:"#ff4fa3",
+    titulo:"Presente continuo (-ing)",
+    preguntas:[
+      {
+        q:"En el presente continuo usamos los verbos:",
+        en:"",
+        ops:["do / does / did","am / is / are","was / were"],
+        correcta:1
+      },
+      {
+        q:"¿Qué le agregamos al verbo principal?",
+        en:"",
+        ops:["Le agregamos -ed","Le agregamos -s","Le agregamos -ing"],
+        correcta:2
+      },
+      {
+        q:"Escribe <b>travel</b> en forma -ing:",
+        en:"travel → ?",
+        ops:["traveling","traveled","travels"],
+        correcta:0
+      },
+      {
+        q:"Escribe <b>swim</b> en forma -ing:",
+        en:"swim → ?",
+        ops:["swiming","swimming","swimed"],
+        correcta:1
+      },
+      {
+        q:"Completa la oración:",
+        en:"I ____ studying English.",
+        ops:["is","are","am"],
+        correcta:2
+      },
+      {
+        q:"Completa la oración:",
+        en:"She ____ playing soccer.",
+        ops:["is","am","are"],
+        correcta:0
+      },
+      {
+        q:"¿Cuál oración es correcta?",
+        en:"",
+        ops:["I travelling tomorrow","I am traveling tomorrow","I am travel tomorrow"],
+        correcta:1
+      }
+    ]
+  },
+  {
+    nombre:"Nivel 3 · SHOULD 💡",
+    medalla:"🏆",
+    color:"#9d50ff",
+    titulo:"SHOULD = dar consejos",
+    preguntas:[
+      {
+        q:"¿Para qué usamos <b>should</b>?",
+        en:"",
+        ops:["Para dar consejos o recomendaciones","Para hablar del pasado","Para describir un animal"],
+        correcta:0
+      },
+      {
+        q:"¿Qué significa <b>should</b>?",
+        en:"You should study",
+        ops:["Debería","Ayer","Voy a"],
+        correcta:0
+      },
+      {
+        q:"¿Qué significa <b>should not</b>?",
+        en:"You should not run",
+        ops:["Debería","No debería","Estoy corriendo"],
+        correcta:1
+      },
+      {
+        q:"¿Cuál oración es correcta?",
+        en:"",
+        ops:["You should to study","You should study","You should studying"],
+        correcta:1
+      },
+      {
+        q:"¿Cuál oración es <b>negativa</b>?",
+        en:"",
+        ops:["We should clean the classroom","They should help their friends","We should not throw trash"],
+        correcta:2
+      },
+      {
+        q:"¿Qué forma del verbo va después de <b>should</b>?",
+        en:"should + ?",
+        ops:["Verbo base (study, eat, play)","Verbo + ing","Verbo + ed"],
+        correcta:0
+      }
+    ]
+  }
+];
+
+/* ---------- Mensajes de premio ---------- */
+const BIEN = ["¡Excelente", "¡Muy bien", "¡Genial", "¡Increíble", "¡Perfecto", "¡Súper", "¡Fantástico"];
+const CARAS_OK = ["😺","😸","🥳","🤩","😻"];
+const ANIMO = ["¡Casi! Prueba otra vez 💪","¡Tú puedes! Inténtalo de nuevo 🌈","¡Uy! Elige otra respuesta 😊"];
+
+/* ---------- Estado ---------- */
+let nivelActual = 0;
+let preguntaActual = 0;
+let estrellas = 0;
+let sonidoOn = true;
+let nombreJugador = "Valery";
+
+/* ---------- Elementos ---------- */
+const $ = id => document.getElementById(id);
+const secInicio = $("inicio"), secJuego = $("juego"), secPremio = $("premioNivel"), secFinal = $("final");
+
+/* ---------- Audio (Web Audio API, sin archivos) ---------- */
+let ctxAudio = null;
+function audioCtx(){ if(!ctxAudio){ try{ ctxAudio = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return ctxAudio; }
+function nota(freq, inicio, dur, tipo="sine", vol=0.18){
+  const ac = audioCtx(); if(!ac || !sonidoOn) return;
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = tipo; o.frequency.value = freq;
+  o.connect(g); g.connect(ac.destination);
+  const t = ac.currentTime + inicio;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol, t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  o.start(t); o.stop(t+dur+0.02);
+}
+function sonidoBien(){ nota(523,0,0.12,"triangle"); nota(659,0.1,0.12,"triangle"); nota(784,0.2,0.2,"triangle"); }
+function sonidoMal(){ nota(300,0,0.18,"sine",0.14); nota(240,0.12,0.22,"sine",0.14); }
+function sonidoNivel(){ [523,659,784,1047].forEach((f,i)=>nota(f, i*0.12, 0.25,"triangle")); }
+function sonidoFinal(){ [523,659,784,1047,784,1047,1319].forEach((f,i)=>nota(f, i*0.14, 0.3,"triangle",0.2)); }
+function clic(){ nota(660,0,0.05,"square",0.08); }
+
+/* ---------- Estrellas de fondo ---------- */
+(function fondo(){
+  const cielo = $("cielo"); const emojis=["⭐","✨","🌟","💫"];
+  for(let i=0;i<14;i++){
+    const s=document.createElement("span");
+    s.textContent = emojis[i%emojis.length];
+    s.style.left = Math.random()*100+"%";
+    s.style.fontSize = (12+Math.random()*16)+"px";
+    s.style.animationDuration = (8+Math.random()*10)+"s";
+    s.style.animationDelay = (Math.random()*8)+"s";
+    cielo.appendChild(s);
+  }
+})();
+
+/* ---------- Confeti ---------- */
+const cv = $("confeti"); const cx = cv.getContext("2d");
+let piezas = [];
+function tamCanvas(){ cv.width = innerWidth; cv.height = innerHeight; }
+tamCanvas(); addEventListener("resize", tamCanvas);
+function lanzarConfeti(cantidad=90){
+  const cols=["#ff4fa3","#ffd43b","#2ecc71","#4dabf7","#9d50ff","#ff6b6b","#ff9f1c"];
+  for(let i=0;i<cantidad;i++){
+    piezas.push({
+      x: innerWidth/2 + (Math.random()-0.5)*120,
+      y: innerHeight/2 - 60,
+      vx:(Math.random()-0.5)*9,
+      vy: -(6+Math.random()*9),
+      g:0.28+Math.random()*0.12,
+      s:6+Math.random()*8,
+      col:cols[(Math.random()*cols.length)|0],
+      rot:Math.random()*6.28, vr:(Math.random()-0.5)*0.3,
+      vida:120
+    });
+  }
+  if(!animando) animarConfeti();
+}
+let animando=false;
+function animarConfeti(){
+  animando=true;
+  cx.clearRect(0,0,cv.width,cv.height);
+  piezas.forEach(p=>{
+    p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.vida--;
+    cx.save(); cx.translate(p.x,p.y); cx.rotate(p.rot);
+    cx.fillStyle=p.col; cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); cx.restore();
+  });
+  piezas = piezas.filter(p=>p.vida>0 && p.y<cv.height+40);
+  if(piezas.length>0){ requestAnimationFrame(animarConfeti); }
+  else { cx.clearRect(0,0,cv.width,cv.height); animando=false; }
+}
+
+/* ---------- Guardar/cargar progreso (opcional, seguro) ---------- */
+function guardar(){
+  try{ localStorage.setItem("valery_estrellas", estrellas); }catch(e){}
+}
+
+/* ---------- Navegación de pantallas ---------- */
+function mostrar(sec){
+  [secInicio,secJuego,secPremio,secFinal].forEach(s=>s.classList.add("oculto"));
+  sec.classList.remove("oculto");
+}
+
+/* ---------- Empezar ---------- */
+$("btnEmpezar").addEventListener("click", ()=>{
+  audioCtx(); // activa audio con el toque del usuario
+  const n = $("nombre").value.trim();
+  nombreJugador = n ? n.charAt(0).toUpperCase()+n.slice(1) : "Valery";
+  nivelActual = 0; preguntaActual = 0; estrellas = 0;
+  actualizarEstrellas();
+  mostrar(secJuego);
+  cargarPregunta();
+});
+
+/* ---------- Mostrar una pregunta ---------- */
+function cargarPregunta(){
+  const nivel = NIVELES[nivelActual];
+  const p = nivel.preguntas[preguntaActual];
+
+  $("nivelTag").textContent = nivel.nombre;
+  $("nivelTag").style.background = nivel.color;
+  $("reaccion").textContent = ""; $("reaccion").className = "reaccion";
+
+  // progreso del nivel
+  const total = nivel.preguntas.length;
+  $("conteo").textContent = "Pregunta "+(preguntaActual+1)+" de "+total;
+  $("barra").style.width = ((preguntaActual)/total*100)+"%";
+
+  // pregunta
+  let html = p.q;
+  if(p.en){ html += '<span class="en">'+p.en+'</span>'; }
+  $("pregunta").innerHTML = html;
+  $("mascotaJuego").textContent = "🐱";
+
+  // opciones (mezcladas)
+  const cont = $("opciones"); cont.innerHTML = "";
+  const indices = p.ops.map((_,i)=>i);
+  // Mezclar manteniendo cuál es la correcta
+  for(let i=indices.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [indices[i],indices[j]]=[indices[j],indices[i]]; }
+
+  indices.forEach(idx=>{
+    const b = document.createElement("button");
+    b.className = "opcion";
+    b.innerHTML = p.ops[idx];
+    b.addEventListener("click", ()=>responder(b, idx===p.correcta, cont));
+    cont.appendChild(b);
+  });
+}
+
+/* ---------- Responder ---------- */
+let bloqueado = false;
+function responder(boton, esCorrecta, cont){
+  if(bloqueado) return;
+  clic();
+
+  if(esCorrecta){
+    bloqueado = true;
+    boton.classList.add("bien");
+    [...cont.children].forEach(b=>b.classList.add("bloqueada"));
+    estrellas++;
+    actualizarEstrellas();
+    guardar();
+    sonidoBien();
+    lanzarConfeti(70);
+    $("mascotaJuego").textContent = CARAS_OK[(Math.random()*CARAS_OK.length)|0];
+    const msg = BIEN[(Math.random()*BIEN.length)|0] + " " + nombreJugador + "! ⭐";
+    $("reaccion").textContent = msg;
+    $("reaccion").className = "reaccion ok";
+
+    // avanzar
+    const total = NIVELES[nivelActual].preguntas.length;
+    $("barra").style.width = ((preguntaActual+1)/total*100)+"%";
+    setTimeout(()=>{
+      bloqueado = false;
+      preguntaActual++;
+      if(preguntaActual >= total){ finNivel(); }
+      else { cargarPregunta(); }
+    }, 1400);
+  } else {
+    // respuesta incorrecta: animo y dejar reintentar
+    boton.classList.add("mal");
+    boton.classList.add("bloqueada");
+    sonidoMal();
+    $("mascotaJuego").textContent = "🙀";
+    $("reaccion").textContent = ANIMO[(Math.random()*ANIMO.length)|0];
+    $("reaccion").className = "reaccion no";
+    setTimeout(()=>{ $("mascotaJuego").textContent = "🐱"; }, 900);
+  }
+}
+
+function actualizarEstrellas(){ $("estrellas").textContent = "⭐ "+estrellas; }
+
+/* ---------- Fin de nivel ---------- */
+function finNivel(){
+  const nivel = NIVELES[nivelActual];
+  if(nivelActual < NIVELES.length-1){
+    // premio y siguiente
+    $("medallaIcono").textContent = nivel.medalla;
+    $("premioTitulo").textContent = "¡Muy bien "+nombreJugador+"! "+nivel.medalla;
+    $("premioTexto").textContent = "Terminaste el "+nivel.titulo+". ¡Ganaste una medalla!";
+    mostrar(secPremio);
+    sonidoNivel();
+    lanzarConfeti(120);
+  } else {
+    finalJuego();
+  }
+}
+
+$("btnSiguiente").addEventListener("click", ()=>{
+  clic();
+  nivelActual++;
+  preguntaActual = 0;
+  mostrar(secJuego);
+  cargarPregunta();
+});
+
+/* ---------- Final del juego ---------- */
+function finalJuego(){
+  $("finalTitulo").textContent = "¡Lo lograste, "+nombreJugador+"! 🏆";
+  $("finalTexto").textContent = "Eres una campeona del inglés 🌟 WILL, -ING y SHOULD, ¡todo dominado!";
+  $("finalEstrellas").textContent = "⭐ "+estrellas+" estrellas";
+  mostrar(secFinal);
+  sonidoFinal();
+  lanzarConfeti(180);
+  setTimeout(()=>lanzarConfeti(120), 700);
+}
+
+$("btnOtraVez").addEventListener("click", ()=>{
+  clic();
+  nivelActual = 0; preguntaActual = 0; estrellas = 0;
+  actualizarEstrellas();
+  mostrar(secJuego);
+  cargarPregunta();
+});
+
+/* ---------- Botón de sonido ---------- */
+$("btnSonido").addEventListener("click", ()=>{
+  sonidoOn = !sonidoOn;
+  $("btnSonido").textContent = sonidoOn ? "🔊" : "🔈";
+  if(sonidoOn){ audioCtx(); clic(); }
+});
+</script>
+</body>
+</html>
