@@ -99,7 +99,10 @@
   /* ---------- Barra superior del juego ---------- */
   .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
   .nivel-tag{ background:var(--morado); color:#fff; font-weight:700; font-family:'Baloo 2'; font-size:14px; padding:5px 14px; border-radius:30px; }
-  .estrellas{ font-size:19px; font-weight:700; color:#c98a00; font-family:'Baloo 2'; background:#fff; padding:5px 13px; border-radius:30px; box-shadow:0 3px 8px rgba(200,160,0,.2); }
+  .estrellas{ font-size:18px; font-weight:700; color:#c98a00; font-family:'Baloo 2'; background:#fff; padding:5px 12px; border-radius:30px; box-shadow:0 3px 8px rgba(200,160,0,.2); }
+  .mini-btn{ background:#fff; border:none; border-radius:30px; font-size:15px; font-weight:700; font-family:'Baloo 2'; color:#7b5ba8; padding:5px 12px; cursor:pointer; box-shadow:0 3px 8px rgba(120,40,160,.14); transition:transform .08s; }
+  .mini-btn:active{ transform:scale(.93); }
+  .link-menu{ background:none; border:none; color:#9a7ac0; font-family:'Fredoka'; font-weight:600; font-size:15px; cursor:pointer; margin-top:14px; text-decoration:underline; }
 
   .progreso{ background:#eadcff; height:16px; border-radius:30px; overflow:hidden; margin:10px 0 4px; box-shadow:inset 0 2px 4px rgba(0,0,0,.08); }
   .progreso i{ display:block; height:100%; width:0%; border-radius:30px; background:linear-gradient(90deg,var(--amarillo),var(--rosa)); transition:width .5s ease; }
@@ -186,6 +189,7 @@
   <!-- ===== JUEGO ===== -->
   <section id="juego" class="oculto">
     <div class="topbar">
+      <button class="mini-btn" id="btnMenu" title="Menú principal">🏠 Menú</button>
       <span class="nivel-tag" id="nivelTag">Nivel 1</span>
       <span class="estrellas" id="estrellas">⭐ 0</span>
     </div>
@@ -214,6 +218,8 @@
     <div class="estrellas" id="finalEstrellas" style="display:inline-block; font-size:24px; margin-bottom:16px;">⭐ 0</div>
     <br>
     <button class="btn rosa" id="btnOtraVez">Jugar otra vez 🔁</button>
+    <br>
+    <button class="link-menu" id="btnMenuFinal">🏠 Volver al menú principal</button>
   </section>
 </div>
 
@@ -227,6 +233,7 @@
 const NIVELES = [
   {
     nombre:"Nivel 1 · WILL 🚀",
+    corto:"🚀 Nivel 1",
     medalla:"🥇",
     color:"#4dabf7",
     titulo:"WILL = el futuro",
@@ -271,6 +278,7 @@ const NIVELES = [
   },
   {
     nombre:"Nivel 2 · -ING 🏃",
+    corto:"🏃 Nivel 2",
     medalla:"🏅",
     color:"#ff4fa3",
     titulo:"Presente continuo (-ing)",
@@ -321,6 +329,7 @@ const NIVELES = [
   },
   {
     nombre:"Nivel 3 · SHOULD 💡",
+    corto:"💡 Nivel 3",
     medalla:"🏆",
     color:"#9d50ff",
     titulo:"SHOULD = dar consejos",
@@ -381,25 +390,60 @@ let nombreJugador = "Valery";
 const $ = id => document.getElementById(id);
 const secInicio = $("inicio"), secJuego = $("juego"), secPremio = $("premioNivel"), secFinal = $("final");
 
-/* ---------- Audio (Web Audio API, sin archivos) ---------- */
+/* ---------- Audio suave (Web Audio API) ---------- */
 let ctxAudio = null;
 function audioCtx(){ if(!ctxAudio){ try{ ctxAudio = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return ctxAudio; }
-function nota(freq, inicio, dur, tipo="sine", vol=0.18){
+// Campanita suave tipo marimba (onda seno, volumen bajo, envolvente redondita)
+function campana(freq, inicio, dur, vol=0.08){
   const ac = audioCtx(); if(!ac || !sonidoOn) return;
   const o = ac.createOscillator(), g = ac.createGain();
-  o.type = tipo; o.frequency.value = freq;
+  o.type = "sine"; o.frequency.value = freq;
   o.connect(g); g.connect(ac.destination);
   const t = ac.currentTime + inicio;
-  g.gain.setValueAtTime(0, t);
-  g.gain.linearRampToValueAtTime(vol, t+0.02);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t+0.04);
   g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
-  o.start(t); o.stop(t+dur+0.02);
+  o.start(t); o.stop(t+dur+0.05);
 }
-function sonidoBien(){ nota(523,0,0.12,"triangle"); nota(659,0.1,0.12,"triangle"); nota(784,0.2,0.2,"triangle"); }
-function sonidoMal(){ nota(300,0,0.18,"sine",0.14); nota(240,0.12,0.22,"sine",0.14); }
-function sonidoNivel(){ [523,659,784,1047].forEach((f,i)=>nota(f, i*0.12, 0.25,"triangle")); }
-function sonidoFinal(){ [523,659,784,1047,784,1047,1319].forEach((f,i)=>nota(f, i*0.14, 0.3,"triangle",0.2)); }
-function clic(){ nota(660,0,0.05,"square",0.08); }
+// Un solo "tilín" alegre y discreto cuando acierta
+function sonidoBien(){ campana(880,0,0.45,0.09); campana(1320,0.07,0.5,0.05); }
+// Fin de nivel: tres notitas suaves que suben
+function sonidoNivel(){ [660,880,1175].forEach((f,i)=>campana(f, i*0.16, 0.6, 0.08)); }
+// Final: arpegio tranquilo
+function sonidoFinal(){ [660,880,1175,1568].forEach((f,i)=>campana(f, i*0.18, 0.7, 0.09)); }
+// Error: un tono bajito y breve, nada molesto
+function sonidoMal(){ campana(330,0,0.28,0.05); }
+function clic(){ /* sin sonido en los toques normales, para no cargar */ }
+
+/* ---------- Voz en español (dice "¡Excelente Valery!") ---------- */
+let vozES = null, vozLista = false;
+function buscarVoz(){
+  if(!('speechSynthesis' in window)) return;
+  const voces = speechSynthesis.getVoices();
+  if(!voces || !voces.length) return;
+  vozES = voces.find(v=>/^es[-_]?(CO|419|MX|US|LA)/i.test(v.lang))     // español latino
+       || voces.find(v=>/^es/i.test(v.lang))                            // cualquier español
+       || null;
+  vozLista = true;
+}
+if('speechSynthesis' in window){
+  buscarVoz();
+  speechSynthesis.onvoiceschanged = buscarVoz;
+}
+function hablar(texto){
+  if(!sonidoOn || !('speechSynthesis' in window)) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(texto);
+    u.lang = vozES ? vozES.lang : 'es-ES';
+    if(vozES) u.voice = vozES;
+    u.rate = 1.02;   // ritmo natural
+    u.pitch = 1.2;   // un poco agudo y alegre para una niña
+    u.volume = 1.0;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function detenerVoz(){ try{ if('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){} }
 
 /* ---------- Estrellas de fondo ---------- */
 (function fondo(){
@@ -469,16 +513,26 @@ $("btnEmpezar").addEventListener("click", ()=>{
   nombreJugador = n ? n.charAt(0).toUpperCase()+n.slice(1) : "Valery";
   nivelActual = 0; preguntaActual = 0; estrellas = 0;
   actualizarEstrellas();
+  hablar("¡Hola, "+nombreJugador+"! A jugar."); // saludo + prepara la voz en el móvil
   mostrar(secJuego);
   cargarPregunta();
 });
+
+/* ---------- Volver al menú principal ---------- */
+function irAlMenu(){
+  detenerVoz();
+  piezas = [];                 // limpia el confeti
+  mostrar(secInicio);
+}
+$("btnMenu").addEventListener("click", irAlMenu);
+$("btnMenuFinal").addEventListener("click", irAlMenu);
 
 /* ---------- Mostrar una pregunta ---------- */
 function cargarPregunta(){
   const nivel = NIVELES[nivelActual];
   const p = nivel.preguntas[preguntaActual];
 
-  $("nivelTag").textContent = nivel.nombre;
+  $("nivelTag").textContent = nivel.corto || nivel.nombre;
   $("nivelTag").style.background = nivel.color;
   $("reaccion").textContent = ""; $("reaccion").className = "reaccion";
 
@@ -522,11 +576,12 @@ function responder(boton, esCorrecta, cont){
     actualizarEstrellas();
     guardar();
     sonidoBien();
-    lanzarConfeti(70);
+    lanzarConfeti(60);
     $("mascotaJuego").textContent = CARAS_OK[(Math.random()*CARAS_OK.length)|0];
-    const msg = BIEN[(Math.random()*BIEN.length)|0] + " " + nombreJugador + "! ⭐";
-    $("reaccion").textContent = msg;
+    const palabra = BIEN[(Math.random()*BIEN.length)|0];       // ej: "¡Excelente"
+    $("reaccion").textContent = palabra + " " + nombreJugador + "! ⭐";
     $("reaccion").className = "reaccion ok";
+    hablar(palabra + " " + nombreJugador + "!");                // ¡lo dice en voz alta!
 
     // avanzar
     const total = NIVELES[nivelActual].preguntas.length;
@@ -561,7 +616,8 @@ function finNivel(){
     $("premioTexto").textContent = "Terminaste el "+nivel.titulo+". ¡Ganaste una medalla!";
     mostrar(secPremio);
     sonidoNivel();
-    lanzarConfeti(120);
+    lanzarConfeti(110);
+    hablar("¡Muy bien, "+nombreJugador+"! Ganaste una medalla.");
   } else {
     finalJuego();
   }
@@ -582,8 +638,9 @@ function finalJuego(){
   $("finalEstrellas").textContent = "⭐ "+estrellas+" estrellas";
   mostrar(secFinal);
   sonidoFinal();
-  lanzarConfeti(180);
-  setTimeout(()=>lanzarConfeti(120), 700);
+  lanzarConfeti(160);
+  setTimeout(()=>lanzarConfeti(110), 700);
+  hablar("¡Felicitaciones, "+nombreJugador+"! Eres una campeona del inglés.");
 }
 
 $("btnOtraVez").addEventListener("click", ()=>{
@@ -598,7 +655,7 @@ $("btnOtraVez").addEventListener("click", ()=>{
 $("btnSonido").addEventListener("click", ()=>{
   sonidoOn = !sonidoOn;
   $("btnSonido").textContent = sonidoOn ? "🔊" : "🔈";
-  if(sonidoOn){ audioCtx(); clic(); }
+  if(sonidoOn){ audioCtx(); sonidoBien(); } else { detenerVoz(); }
 });
 </script>
 </body>
